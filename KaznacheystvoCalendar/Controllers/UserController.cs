@@ -46,11 +46,11 @@ public class UserController:ControllerBase
         var response = await _userService.UpdateUserAsync(id, user);
         switch (response)
         {
-            case UserSevicesErrors.NotFound:
+            case UserServicesErrors.NotFound:
                 return BadRequest(new { message = "Пользователь не найден" });
-            case UserSevicesErrors.AlreadyExists:
+            case UserServicesErrors.AlreadyExists:
                 return BadRequest(new { message = "Такой логин пользователя уже занят" });
-            case UserSevicesErrors.Ok:
+            case UserServicesErrors.Ok:
                 return Ok(new { message = "Пользователь успешно обновлён" });
             default:
                 return BadRequest(new { message = "Что-то пошло не так" });

@@ -1,0 +1,16 @@
+﻿namespace KaznacheystvoCalendar.DTO.Event;
+
+public class CreateEventDTO
+{
+    public int ManagerId { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public DateTime StartDateTime { get; set; }
+    
+    public DateTime EndDateTime { get; set; }
+
+    public int LocationId { get; set; }
+
+    public string Description { get; set; } = null!;
+}

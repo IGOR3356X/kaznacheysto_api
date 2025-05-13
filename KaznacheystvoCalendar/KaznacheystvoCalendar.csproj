@@ -38,8 +38,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DTO\Event\" />
-    </ItemGroup>
-
 </Project>

@@ -1,0 +1,6 @@
+﻿services:
+  kaznacheystvocalendar:
+    image: kaznacheystvocalendar
+    build:
+      context: .
+      dockerfile: KaznacheystvoCalendar/Dockerfile

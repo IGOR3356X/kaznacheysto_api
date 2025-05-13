@@ -1,3 +1,4 @@
+using System.Text;
 using KaznacheystvoCalendar.Interfaces;
 using KaznacheystvoCalendar.Interfaces.ISevices;
 using KaznacheystvoCalendar.Mapper;
@@ -21,9 +22,11 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IS3Service, S3Service>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddCors(options =>
 {
@@ -82,12 +85,14 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigninKey"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigninKey"])),
         ValidateLifetime = true,
     };
 });
 
 builder.Services.AddControllers();
+
+
 var app = builder.Build();
 
 

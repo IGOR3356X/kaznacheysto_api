@@ -76,17 +76,17 @@ public class UserService : IUserService
         return await _repository.CreateAsync(_mapper.Map<User>(createUserDto));
     }
 
-    public async Task<UserSevicesErrors> UpdateUserAsync(int id, UpdateUserDTO updateUserDto)
+    public async Task<UserServicesErrors> UpdateUserAsync(int id, UpdateUserDTO updateUserDto)
     {
         string? photo = null;
         
         var user = await _repository.GetByIdAsync(id);
         if(user == null)
-            return UserSevicesErrors.NotFound;
+            return UserServicesErrors.NotFound;
         
         if (await _repository.GetQueryable().Where(x => x.Login.Contains(user.Login) && x.Id != id).FirstOrDefaultAsync() != null)
         {
-            return UserSevicesErrors.AlreadyExists;
+            return UserServicesErrors.AlreadyExists;
         }
         
         if (updateUserDto.Photo != null && updateUserDto.Photo.Length > 0)
@@ -106,7 +106,7 @@ public class UserService : IUserService
         
         await _repository.UpdateAsync(user);
         
-        return UserSevicesErrors.Ok;
+        return UserServicesErrors.Ok;
     }
     
     public async Task<bool> DeleteUserAsync(int id)

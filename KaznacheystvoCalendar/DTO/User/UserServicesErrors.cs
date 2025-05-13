@@ -1,6 +1,6 @@
 ﻿namespace KaznacheystvoCalendar.DTO.User;
 
-public enum UserSevicesErrors
+public enum UserServicesErrors
 {
     NotFound,
     AlreadyExists,
