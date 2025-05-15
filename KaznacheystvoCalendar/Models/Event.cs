@@ -17,6 +17,8 @@ public partial class Event
 
     public string Description { get; set; } = null!;
 
+    public string Status { get; set; } = null!;
+
     public DateTime EndDateTime { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();

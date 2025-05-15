@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KaznacheystvoCalendar.DTO;
+using KaznacheystvoCalendar.DTO.Departament;
 using KaznacheystvoCalendar.DTO.Event;
 using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Interfaces;
@@ -15,15 +16,17 @@ public class EventService : IEventService
     private readonly IGenericRepository<Event> _eventRepository;
     private readonly IGenericRepository<EventVisible> _visibleRepository;
     private readonly IGenericRepository<Comment> _commentRepository;
+    private readonly IGenericRepository<Department> _departmentRepository;
     private readonly IMapper _mapper;
 
     public EventService(IGenericRepository<Event> eventRepository, IMapper mapper,
-        IGenericRepository<EventVisible> visibleRepository, IGenericRepository<Comment> repositoryComment)
+        IGenericRepository<EventVisible> visibleRepository, IGenericRepository<Comment> repositoryComment, IGenericRepository<Department> departmentRepository)
     {
         _eventRepository = eventRepository;
         _mapper = mapper;
         _visibleRepository = visibleRepository;
         _commentRepository = repositoryComment;
+        _departmentRepository = departmentRepository;
     }
 
     public async Task<List<EventViewDTO>> GetCalendarEventsAsync(string userRole, string userDepartament, int month,
@@ -135,26 +138,61 @@ public class EventService : IEventService
             .Include(x => x.Location)
             .Include(x => x.Manager)
             .Where(x => x.Id == id).FirstOrDefaultAsync();
+        
         var comments = await _commentRepository.GetQueryable()
             .Include(x => x.User).ToListAsync();
-        var commentDtos =  _mapper.Map<List<CommentDTO>>(comments);
-
-        return new ViewEventByIdDTO()
-        {
-            Id = events.Id,
-            Manager = events.Manager.FullName,
-            Name = events.Name,
-            StartDateTime = events.StartDateTime,
-            Location = events.Location.Name,
-            Description = events.Description,
-            EndDateTime = events.EndDateTime,
-            Comments = commentDtos
-        };
+        
+        var commentDtos = _mapper.Map<List<CommentDTO>>(comments);
+        
+        var listDepartments = await _visibleRepository.GetQueryable()
+            .Include(x => x.Department)
+            .Where(x => x.EventId == id).ToListAsync();
+        
+        var mappedDep = _mapper.Map<List<GetDeparamentsDTO>>(listDepartments);
+        
+        var mappedResult = _mapper.Map<ViewEventByIdDTO>(events);
+        mappedResult.Comments = commentDtos;
+        mappedResult.Deparaments = mappedDep;
+        
+        return mappedResult;
     }
 
-    public Task<CreateEventDTO> CreateEventAsync(CreateEventDTO eventDto)
+    public async Task<CreatedEventDTO> CreateEventAsync(CreateEventDTO eventDto)
     {
-        throw new NotImplementedException();
+        List<EventVisible> departments = new List<EventVisible>();
+        List<GetDeparamentsDTO> depNames = new List<GetDeparamentsDTO>();
+        var createdEntity = await _eventRepository.CreateAsync(_mapper.Map<Event>(eventDto));
+        for (int i = 0; i < eventDto.DepartmentsId.Length; i++)
+        {
+            var entity = new EventVisible()
+            {
+                 EventId= createdEntity.Id,
+                 DepartmentId= eventDto.DepartmentsId[i],
+            };
+            departments.Add(entity);
+        }
+        
+        var createdDep = await _visibleRepository.AddRangeAsync(departments);
+        var listDep = createdDep.ToList();
+        var finalEvent = await _eventRepository.GetQueryable()
+            .Include(x => x.Location)
+            .Include(x => x.Manager)
+            .Where(x => x.Id == createdEntity.Id).FirstOrDefaultAsync();
+        
+        var outEntity = _mapper.Map<CreatedEventDTO>(finalEvent);
+        for (int i = 0; i < listDep.Count; i++)
+        {
+            var selectedDep = await _departmentRepository.GetByIdAsync(listDep[i].DepartmentId);
+            var gg = new GetDeparamentsDTO()
+            {
+                Name = selectedDep.Name,
+            };
+            depNames.Add(gg);
+        }
+        
+        outEntity.DepartmentNames = depNames;
+        
+        return outEntity;
     }
 
     public Task<bool> UpdateEventAsync(UpdateEventDTO eventDto)

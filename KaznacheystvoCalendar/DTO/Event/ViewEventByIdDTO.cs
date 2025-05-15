@@ -1,4 +1,5 @@
-﻿using KaznacheystvoCalendar.Models;
+﻿using KaznacheystvoCalendar.DTO.Departament;
+using KaznacheystvoCalendar.Models;
 
 namespace KaznacheystvoCalendar.DTO.Event;
 
@@ -17,7 +18,8 @@ public class ViewEventByIdDTO
     public string Description { get; set; } = null!;
 
     public DateTime EndDateTime { get; set; }
-
+    
+    public List<GetDeparamentsDTO> Deparaments { get; set; }
     public List<CommentDTO> Comments { get; set; }
 
 }

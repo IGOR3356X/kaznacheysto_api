@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using KaznacheystvoCalendar.DTO.Event;
 using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Interfaces.ISevices;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KaznacheystvoCalendar.Controllers;
 
 [ApiController]
-[Route("api/")]
+[Route("api/[controller]")]
 public class EventController:ControllerBase
 {
     private readonly IEventService _eventService;
@@ -16,15 +17,14 @@ public class EventController:ControllerBase
         _eventService = eventService;
     }
 
-    [Route("[action]")]
     [HttpGet]
+    [Route("[action]")]
     public async Task<IActionResult> CalendarEventAsync([FromQuery] int year, int month)
     {
         var userRole = User.FindFirst("Role")?.Value;
         var userDepartament = User.FindFirst("Departament")?.Value;
         return Ok(await _eventService.GetCalendarEventsAsync(userRole, userDepartament, month, year));
     }
-    [Route("[action]")]
     [HttpGet]
     public async Task<IActionResult> EventAsync([FromQuery] QueryObject query)
     {
@@ -33,8 +33,8 @@ public class EventController:ControllerBase
         return Ok(await _eventService.GetEventsAsync(query,userRole, userDepartament));
     }
 
-    [Route("Event/{id:int}")]
-    [HttpGet]
+    [HttpGet("{id}")]
+    [ActionName("EventByIdAsync")]
     public async Task<IActionResult> EventByIdAsync([FromRoute]int id)
     {
         var isExist = await _eventService.GetEventByIdAsync(id);
@@ -42,4 +42,13 @@ public class EventController:ControllerBase
             return NotFound();
         return Ok(isExist);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> CrateEventAsync([FromBody] CreateEventDTO eventDto)
+    {
+        var createdEvent = await _eventService.CreateEventAsync(eventDto);
+        return CreatedAtAction(nameof(EventByIdAsync), new { id = createdEvent.Id }, createdEvent);;
+    }
+    
+    
 }

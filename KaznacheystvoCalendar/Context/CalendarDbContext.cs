@@ -31,6 +31,7 @@ public partial class CalendarDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
     
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -98,6 +99,9 @@ public partial class CalendarDbContext : DbContext
             entity.Property(e => e.StartDateTime)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("start_date_time");
+            entity.Property(e => e.Status)
+                .HasMaxLength(30)
+                .HasColumnName("status");
 
             entity.HasOne(d => d.Location).WithMany(p => p.Events)
                 .HasForeignKey(d => d.LocationId)

@@ -10,7 +10,7 @@ public interface IEventService
     public Task<PaginatedResponse<EventViewDTO>> GetEventsAsync(QueryObject queryObject, string userRole,
         string userDepartament);
     public Task<ViewEventByIdDTO> GetEventByIdAsync(int id);
-    public Task<CreateEventDTO> CreateEventAsync(CreateEventDTO eventDto);
+    public Task<CreatedEventDTO> CreateEventAsync(CreateEventDTO eventDto);
     public Task<bool> UpdateEventAsync(UpdateEventDTO eventDto);
     public Task<bool> DeleteEventAsync(int id);
 }
