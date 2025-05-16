@@ -11,6 +11,6 @@ public interface IEventService
         string userDepartament);
     public Task<ViewEventByIdDTO> GetEventByIdAsync(int id);
     public Task<CreatedEventDTO> CreateEventAsync(CreateEventDTO eventDto);
-    public Task<bool> UpdateEventAsync(UpdateEventDTO eventDto);
+    public Task<bool> UpdateEventAsync(int id,UpdateEventDTO eventDto);
     public Task<bool> DeleteEventAsync(int id);
 }

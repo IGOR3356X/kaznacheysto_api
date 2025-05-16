@@ -13,4 +13,6 @@ public class UpdateEventDTO
     public int LocationId { get; set; }
 
     public string Description { get; set; } = null!;
+
+    public int[] departmentIds { get; set; }
 }

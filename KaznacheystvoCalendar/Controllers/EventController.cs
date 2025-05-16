@@ -49,6 +49,13 @@ public class EventController:ControllerBase
         var createdEvent = await _eventService.CreateEventAsync(eventDto);
         return CreatedAtAction(nameof(EventByIdAsync), new { id = createdEvent.Id }, createdEvent);;
     }
-    
-    
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] UpdateEventDTO eventDto)
+    {
+        var isExist = await _eventService.UpdateEventAsync(id, eventDto);
+        if(isExist == false)
+            return NotFound();
+        return Ok();
+    }
 }

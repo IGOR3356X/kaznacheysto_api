@@ -3,6 +3,7 @@ using CoolFormApi.DTO.Auth;
 using KaznacheystvoCalendar.DTO;
 using KaznacheystvoCalendar.DTO.Departament;
 using KaznacheystvoCalendar.DTO.Event;
+using KaznacheystvoCalendar.DTO.Location;
 using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Models;
 
@@ -62,10 +63,16 @@ public class MappingProfile : Profile
         CreateMap<Comment, CreatedCommentDTO>()
             .ForMember(src => src.Date, opt => opt
                 .MapFrom(src => src.DateTime));
+        CreateMap<UpdateEventDTO, Event>();
 
         //Department Mappers
         CreateMap<Department, GetDeparamentsDTO>();
         CreateMap<CreateDepartamentDTO, Department>();
         CreateMap<Department, CreatedDepartamentDTO>();
+        
+        //Location Mappers
+        CreateMap<Location, GetLocationDTO>();
+        CreateMap<CreateLocationDTO, Location>();
+        CreateMap<Location, CreatedLocationDTO>();
     }
 }

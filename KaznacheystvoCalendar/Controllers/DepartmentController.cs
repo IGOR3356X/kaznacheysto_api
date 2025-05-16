@@ -41,7 +41,7 @@ public class DepartmentController:ControllerBase
     public async Task<IActionResult> UpdateDepartment(int id, CreateDepartamentDTO dto)
     {
         var entity = await _departmentService.UpdateDepartmentAsync(id, dto);
-        if(entity == null)
+        if(entity == false)
             return NotFound();
         return Ok();
     }
@@ -50,7 +50,7 @@ public class DepartmentController:ControllerBase
     public async Task<IActionResult> DeleteDepartment(int id)
     {
         var entity = await _departmentService.DeleteDepartmentAsync(id);
-        if (entity == null)
+        if (entity == false)
             return NotFound();
         return NoContent();
     }

@@ -159,19 +159,11 @@ public class EventService : IEventService
 
     public async Task<CreatedEventDTO> CreateEventAsync(CreateEventDTO eventDto)
     {
-        List<EventVisible> departments = new List<EventVisible>();
         List<GetDeparamentsDTO> depNames = new List<GetDeparamentsDTO>();
         var createdEntity = await _eventRepository.CreateAsync(_mapper.Map<Event>(eventDto));
-        for (int i = 0; i < eventDto.DepartmentsId.Length; i++)
-        {
-            var entity = new EventVisible()
-            {
-                 EventId= createdEntity.Id,
-                 DepartmentId= eventDto.DepartmentsId[i],
-            };
-            departments.Add(entity);
-        }
-        
+        var departments = eventDto.DepartmentsId.Select(
+            t => new EventVisible() { EventId = createdEntity.Id, DepartmentId = t, }).ToList();
+
         var createdDep = await _visibleRepository.AddRangeAsync(departments);
         var listDep = createdDep.ToList();
         var finalEvent = await _eventRepository.GetQueryable()
@@ -180,9 +172,9 @@ public class EventService : IEventService
             .Where(x => x.Id == createdEntity.Id).FirstOrDefaultAsync();
         
         var outEntity = _mapper.Map<CreatedEventDTO>(finalEvent);
-        for (int i = 0; i < listDep.Count; i++)
+        foreach (var t in listDep)
         {
-            var selectedDep = await _departmentRepository.GetByIdAsync(listDep[i].DepartmentId);
+            var selectedDep = await _departmentRepository.GetByIdAsync(t.DepartmentId);
             var gg = new GetDeparamentsDTO()
             {
                 Name = selectedDep.Name,
@@ -195,9 +187,20 @@ public class EventService : IEventService
         return outEntity;
     }
 
-    public Task<bool> UpdateEventAsync(UpdateEventDTO eventDto)
+    public async Task<bool> UpdateEventAsync(int id,UpdateEventDTO eventDto)
     {
-        throw new NotImplementedException();
+        var entity = await _eventRepository.GetByIdAsync(id);
+        var updatedEntity = _mapper.Map(eventDto, entity);
+        var selectedGG = await _visibleRepository.GetQueryable()
+            .Include(x=> x.Department)
+            .Where(x => x.EventId == updatedEntity.Id).ToListAsync();
+        var a = 5;
+        await _visibleRepository.DeleteRangeAsync(selectedGG);
+        
+        var departments = eventDto.departmentIds.Select(
+            t => new EventVisible() { EventId = updatedEntity.Id, DepartmentId = t, }).ToList();
+        
+        return false;
     }
 
     public Task<bool> DeleteEventAsync(int id)
