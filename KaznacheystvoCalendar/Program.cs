@@ -29,6 +29,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IEventMemberService, EventMemberService>();
 
 builder.Services.AddCors(options =>
 {
@@ -95,6 +96,16 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Сотрудник", policy =>
+        policy.RequireRole("Сотрудник"));
+    options.AddPolicy("Администратор", policy =>
+        policy.RequireRole("Администратор"));
+    options.AddPolicy("Менеджер мероприятий", policy =>
+        policy.RequireRole("Менеджер мероприятий"));
+});
+
 var app = builder.Build();
 
 
@@ -107,7 +118,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 
 app.MapControllers();
 

@@ -1,6 +1,7 @@
 ﻿using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Interfaces.ISevices;
 using KaznacheystvoCalendar.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaznacheystvoCalendar.Controllers;
@@ -17,12 +18,14 @@ public class UserController:ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "Администратор")]
     public async Task<IActionResult> GetAllUsers([FromQuery] QueryObject queryObject)
     {
         return Ok(await _userService.GetUsersAsync(queryObject));
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> GetUserById(int id)
     {
         var IsExist = await _userService.GetUserByIdAsync(id);
@@ -31,6 +34,7 @@ public class UserController:ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Администратор")]
     public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
     {
         var createdUser = await _userService.CreateUserAsync(user);
@@ -39,6 +43,7 @@ public class UserController:ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> UpdateUser(int id, [FromForm] UpdateUserDTO user)
     {
         if(!ModelState.IsValid)
@@ -58,6 +63,7 @@ public class UserController:ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Администратор")]
     public async Task<IActionResult> DeleteUser(int id)
     {
         var isExist = await _userService.DeleteUserAsync(id);

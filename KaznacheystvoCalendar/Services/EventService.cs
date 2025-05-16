@@ -190,17 +190,22 @@ public class EventService : IEventService
     public async Task<bool> UpdateEventAsync(int id,UpdateEventDTO eventDto)
     {
         var entity = await _eventRepository.GetByIdAsync(id);
+        if(entity == null)
+            return false;
+        
         var updatedEntity = _mapper.Map(eventDto, entity);
         var selectedGG = await _visibleRepository.GetQueryable()
             .Include(x=> x.Department)
             .Where(x => x.EventId == updatedEntity.Id).ToListAsync();
-        var a = 5;
+        
         await _visibleRepository.DeleteRangeAsync(selectedGG);
         
         var departments = eventDto.departmentIds.Select(
             t => new EventVisible() { EventId = updatedEntity.Id, DepartmentId = t, }).ToList();
         
-        return false;
+        await _visibleRepository.AddRangeAsync(departments);
+        
+        return true;
     }
 
     public Task<bool> DeleteEventAsync(int id)

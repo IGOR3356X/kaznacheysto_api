@@ -84,7 +84,7 @@ public class UserService : IUserService
         if(user == null)
             return UserServicesErrors.NotFound;
         
-        if (await _repository.GetQueryable().Where(x => x.Login.Contains(user.Login) && x.Id != id).FirstOrDefaultAsync() != null)
+        if (await _repository.GetQueryable().Where(x => x.Login.Contains(updateUserDto.Login) && x.Id != id).FirstOrDefaultAsync() != null)
         {
             return UserServicesErrors.AlreadyExists;
         }

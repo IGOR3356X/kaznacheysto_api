@@ -2,6 +2,7 @@
 using KaznacheystvoCalendar.DTO.Event;
 using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Interfaces.ISevices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaznacheystvoCalendar.Controllers;
@@ -19,6 +20,7 @@ public class EventController:ControllerBase
 
     [HttpGet]
     [Route("[action]")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CalendarEventAsync([FromQuery] int year, int month)
     {
         var userRole = User.FindFirst("Role")?.Value;
@@ -26,6 +28,7 @@ public class EventController:ControllerBase
         return Ok(await _eventService.GetCalendarEventsAsync(userRole, userDepartament, month, year));
     }
     [HttpGet]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> EventAsync([FromQuery] QueryObject query)
     {
         var userRole = User.FindFirst("Role")?.Value;
@@ -35,6 +38,7 @@ public class EventController:ControllerBase
 
     [HttpGet("{id}")]
     [ActionName("EventByIdAsync")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> EventByIdAsync([FromRoute]int id)
     {
         var isExist = await _eventService.GetEventByIdAsync(id);
@@ -44,6 +48,7 @@ public class EventController:ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CrateEventAsync([FromBody] CreateEventDTO eventDto)
     {
         var createdEvent = await _eventService.CreateEventAsync(eventDto);
@@ -51,6 +56,7 @@ public class EventController:ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] UpdateEventDTO eventDto)
     {
         var isExist = await _eventService.UpdateEventAsync(id, eventDto);

@@ -1,6 +1,7 @@
 ﻿using KaznacheystvoCalendar.DTO;
 using KaznacheystvoCalendar.Interfaces.ISevices;
 using KaznacheystvoCalendar.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaznacheystvoCalendar.Controllers;
@@ -17,6 +18,7 @@ public class CommentController: ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CreateComment([FromBody] CreateCommentDTO comment)
     {
         var gg = await _commentService.CreateCommentAsync(comment);
@@ -24,6 +26,7 @@ public class CommentController: ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> DeleteComment(int id)
     {
         if(await _commentService.DeleteCommentAsync(id) == false)
@@ -32,6 +35,7 @@ public class CommentController: ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> GetCommentById(int id)
     {
         var isExist = await _commentService.GetCommentByIdAsync(id);

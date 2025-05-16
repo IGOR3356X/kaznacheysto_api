@@ -31,10 +31,9 @@ public class CreatedEventDTO
     public DateTime StartDateTime { get; set; }
     
     public DateTime EndDateTime { get; set; }
-
     public string Location { get; set; }
 
     public string Description { get; set; } = null!;
-
+    public string Status { get; set; } = null!;
     public List<GetDeparamentsDTO> DepartmentNames{ get; set; }
 }

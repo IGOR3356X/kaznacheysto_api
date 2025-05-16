@@ -1,5 +1,6 @@
 ﻿using KaznacheystvoCalendar.DTO.Departament;
 using KaznacheystvoCalendar.Interfaces.ISevices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaznacheystvoCalendar.Controllers;
@@ -16,12 +17,14 @@ public class DepartmentController:ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> GetAllDepartment()
     {
         return Ok(await _departmentService.GetAllDepartmentAsync());
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> GetDepartmentById(int id)
     {
         var entity = await _departmentService.GetDepartmentByIdAsync(id);
@@ -31,6 +34,7 @@ public class DepartmentController:ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CreateDepartment(CreateDepartamentDTO dto)
     {
         var entity = await _departmentService.CreateDepartmentAsync(dto);
@@ -38,6 +42,7 @@ public class DepartmentController:ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> UpdateDepartment(int id, CreateDepartamentDTO dto)
     {
         var entity = await _departmentService.UpdateDepartmentAsync(id, dto);
@@ -47,6 +52,7 @@ public class DepartmentController:ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> DeleteDepartment(int id)
     {
         var entity = await _departmentService.DeleteDepartmentAsync(id);
