@@ -84,5 +84,17 @@ public class MappingProfile : Profile
             .MapFrom(src => src.User.FullName));
         CreateMap<CreateEventMemberDTO, EventMember>();
         CreateMap<EventMember, CreatedEventMemberDTO>();
+        CreateMap<EventMember,EventViewDTO>().ForMember(x=> x.Id, opt => opt
+                .MapFrom(act => act.Event.Id))
+            .ForMember(act => act.EventName, opt => opt
+            .MapFrom(x=> x.Event.Name))
+            .ForMember(x=> x.Description, opt => opt
+                .MapFrom(src => src.Event.Description))
+            .ForMember(x=> x.Location, opt => opt
+                .MapFrom(src => src.Event.Location.Name))
+            .ForMember(x => x.StartDateTime, opt => opt
+                .MapFrom(src => src.Event.StartDateTime))
+            .ForMember(x=> x.EndDateTime, opt => opt
+                .MapFrom(x=> x.Event.EndDateTime));
     }
 }

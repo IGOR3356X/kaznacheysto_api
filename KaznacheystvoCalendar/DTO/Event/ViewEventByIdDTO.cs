@@ -12,13 +12,13 @@ public class ViewEventByIdDTO
     public string Name { get; set; } = null!;
 
     public DateTime StartDateTime { get; set; }
-
+    public string Status {get; set;}
+    public int LocationId { get; set; }
     public string Location { get; set; }
 
     public string Description { get; set; } = null!;
 
     public DateTime EndDateTime { get; set; }
-    
     public List<GetDeparamentsDTO> Deparaments { get; set; }
     public List<CommentDTO> Comments { get; set; }
 

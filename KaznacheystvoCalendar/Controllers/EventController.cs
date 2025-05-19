@@ -35,6 +35,13 @@ public class EventController:ControllerBase
         var userDepartament = User.FindFirst("Departament")?.Value;
         return Ok(await _eventService.GetEventsAsync(query,userRole, userDepartament));
     }
+    
+    [HttpGet("UserEvents/{userId:int}")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
+    public async Task<IActionResult> GetUserEvent([FromQuery] QueryObject query, [FromRoute] int userId)
+    {
+        return Ok(await _eventService.GetUserEventAsync(query,userId));
+    }
 
     [HttpGet("{id}")]
     [ActionName("EventByIdAsync")]

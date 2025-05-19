@@ -17,16 +17,19 @@ public class EventService : IEventService
     private readonly IGenericRepository<EventVisible> _visibleRepository;
     private readonly IGenericRepository<Comment> _commentRepository;
     private readonly IGenericRepository<Department> _departmentRepository;
+    private readonly IGenericRepository<EventMember> _eventMemberRepository;
     private readonly IMapper _mapper;
 
     public EventService(IGenericRepository<Event> eventRepository, IMapper mapper,
-        IGenericRepository<EventVisible> visibleRepository, IGenericRepository<Comment> repositoryComment, IGenericRepository<Department> departmentRepository)
+        IGenericRepository<EventVisible> visibleRepository, IGenericRepository<Comment> repositoryComment,
+        IGenericRepository<Department> departmentRepository, IGenericRepository<EventMember> eventMemberRepository)
     {
         _eventRepository = eventRepository;
         _mapper = mapper;
         _visibleRepository = visibleRepository;
         _commentRepository = repositoryComment;
         _departmentRepository = departmentRepository;
+        _eventMemberRepository = eventMemberRepository;
     }
 
     public async Task<List<EventViewDTO>> GetCalendarEventsAsync(string userRole, string userDepartament, int month,
@@ -72,7 +75,7 @@ public class EventService : IEventService
             }
 
             var skipNumber = (query.PageNumber - 1) * query.PageSize;
-            
+
             var totalCount = await events.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
@@ -80,7 +83,7 @@ public class EventService : IEventService
                 .OrderByDescending(x => x.StartDateTime)
                 .Skip(skipNumber)
                 .Take(query.PageSize).ToListAsync();
-            
+
             var result = new PaginatedResponse<EventViewDTO>
             {
                 TotalCount = totalCount,
@@ -92,7 +95,7 @@ public class EventService : IEventService
         }
         else
         {
-            var events =_visibleRepository.GetQueryable()
+            var events = _visibleRepository.GetQueryable()
                 .Include(x => x.Event)
                 .Include(x => x.Event.Location)
                 .Include(x => x.Department)
@@ -115,7 +118,7 @@ public class EventService : IEventService
 
             var totalCount = events.Count();
             var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
-            
+
             var items = await events
                 .OrderByDescending(x => x.Event.StartDateTime)
                 .Skip(skipNumber)
@@ -138,24 +141,23 @@ public class EventService : IEventService
             .Include(x => x.Location)
             .Include(x => x.Manager)
             .Where(x => x.Id == id).FirstOrDefaultAsync();
-        
+
         var comments = await _commentRepository.GetQueryable()
-            .Include(x => x.User).
-            Where(x=> x.EventId == id)
+            .Include(x => x.User).Where(x => x.EventId == id)
             .ToListAsync();
-        
+
         var commentDtos = _mapper.Map<List<CommentDTO>>(comments);
-        
+
         var listDepartments = await _visibleRepository.GetQueryable()
             .Include(x => x.Department)
             .Where(x => x.EventId == id).ToListAsync();
-        
+
         var mappedDep = _mapper.Map<List<GetDeparamentsDTO>>(listDepartments);
-        
+
         var mappedResult = _mapper.Map<ViewEventByIdDTO>(events);
         mappedResult.Comments = commentDtos;
         mappedResult.Deparaments = mappedDep;
-        
+
         return mappedResult;
     }
 
@@ -172,7 +174,7 @@ public class EventService : IEventService
             .Include(x => x.Location)
             .Include(x => x.Manager)
             .Where(x => x.Id == createdEntity.Id).FirstOrDefaultAsync();
-        
+
         var outEntity = _mapper.Map<CreatedEventDTO>(finalEvent);
         foreach (var t in listDep)
         {
@@ -183,31 +185,60 @@ public class EventService : IEventService
             };
             depNames.Add(gg);
         }
-        
+
         outEntity.DepartmentNames = depNames;
-        
+
         return outEntity;
     }
 
-    public async Task<bool> UpdateEventAsync(int id,UpdateEventDTO eventDto)
+    public async Task<bool> UpdateEventAsync(int id, UpdateEventDTO eventDto)
     {
         var entity = await _eventRepository.GetByIdAsync(id);
-        if(entity == null)
+        if (entity == null)
             return false;
-        
+
         var updatedEntity = _mapper.Map(eventDto, entity);
         var selectedGG = await _visibleRepository.GetQueryable()
-            .Include(x=> x.Department)
+            .Include(x => x.Department)
             .Where(x => x.EventId == updatedEntity.Id).ToListAsync();
-        
+
         await _visibleRepository.DeleteRangeAsync(selectedGG);
-        
+
         var departments = eventDto.departmentIds.Select(
             t => new EventVisible() { EventId = updatedEntity.Id, DepartmentId = t, }).ToList();
-        
+
         await _visibleRepository.AddRangeAsync(departments);
-        
+
         return true;
+    }
+
+    public async Task<PaginatedResponse<EventViewDTO>> GetUserEventAsync(QueryObject query, int userId)
+    {
+        var events = _eventMemberRepository.GetQueryable()
+            .Include(x=>x.User)
+            .Include(x=>x.Event)
+            .ThenInclude(x=> x.Location)
+            .Where(x => x.UserId == userId);
+        
+        var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+        var totalCount = events.Count();
+        var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
+
+        var items = await events
+            .OrderByDescending(x => x.Event.StartDateTime)
+            .Skip(skipNumber)
+            .Take(query.PageSize).ToListAsync();
+
+        var result = new PaginatedResponse<EventViewDTO>
+        {
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+            Items = _mapper.Map<List<EventViewDTO>>(items)
+        };
+
+        return result;
+        
     }
 
     public Task<bool> DeleteEventAsync(int id)

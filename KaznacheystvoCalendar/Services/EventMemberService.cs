@@ -25,13 +25,14 @@ public class EventMemberService:IEventMemberService
     public async Task<PaginatedResponse<GetAllEventMemberDTO>> GetEventMembers(QueryObject query, int id)
     {
         var members = _evntMemberRepo.GetQueryable()
-            .Include(x=> x.User);
+            .Include(x=> x.User)
+            .Include(x=> x.Event);
         
         if (!string.IsNullOrEmpty(query.Search))
         {
             // Применяем фильтрацию по всем полям, которые вы хотите включить в поиск
             var searchLower = query.Search.ToLower();
-            members = (IIncludableQueryable<EventMember, User>)members.Where(r =>
+            members = (IIncludableQueryable<EventMember, Event>)members.Where(r =>
                 r.Id.ToString().ToLower().Contains(searchLower) ||
                 r.User.FullName.ToLower().Contains(searchLower)
             );
