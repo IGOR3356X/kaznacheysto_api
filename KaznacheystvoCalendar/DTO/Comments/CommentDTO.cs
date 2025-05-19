@@ -3,6 +3,7 @@
 public class CommentDTO
 {
     public string UserName { get; set; }
+    public string Photo  { get; set; }
     
     public DateTime DateTime { get; set; }
 

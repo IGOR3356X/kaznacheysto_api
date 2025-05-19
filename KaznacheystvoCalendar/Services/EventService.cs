@@ -140,7 +140,9 @@ public class EventService : IEventService
             .Where(x => x.Id == id).FirstOrDefaultAsync();
         
         var comments = await _commentRepository.GetQueryable()
-            .Include(x => x.User).ToListAsync();
+            .Include(x => x.User).
+            Where(x=> x.EventId == id)
+            .ToListAsync();
         
         var commentDtos = _mapper.Map<List<CommentDTO>>(comments);
         

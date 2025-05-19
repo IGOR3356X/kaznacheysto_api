@@ -1,4 +1,4 @@
-﻿using CoolFormApi.DTO.Auth;
+﻿using KaznacheystvoCalendar.DTO.Authorization;
 using KaznacheystvoCalendar.Interfaces.ISevices;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;

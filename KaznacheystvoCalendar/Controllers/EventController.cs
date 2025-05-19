@@ -23,7 +23,7 @@ public class EventController:ControllerBase
     [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CalendarEventAsync([FromQuery] int year, int month)
     {
-        var userRole = User.FindFirst("Role")?.Value;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var userDepartament = User.FindFirst("Departament")?.Value;
         return Ok(await _eventService.GetCalendarEventsAsync(userRole, userDepartament, month, year));
     }
@@ -31,7 +31,7 @@ public class EventController:ControllerBase
     [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> EventAsync([FromQuery] QueryObject query)
     {
-        var userRole = User.FindFirst("Role")?.Value;
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var userDepartament = User.FindFirst("Departament")?.Value;
         return Ok(await _eventService.GetEventsAsync(query,userRole, userDepartament));
     }

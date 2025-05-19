@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CoolFormApi.DTO.Auth;
+using KaznacheystvoCalendar.DTO.Authorization;
 using KaznacheystvoCalendar.DTO;
 using KaznacheystvoCalendar.DTO.Departament;
 using KaznacheystvoCalendar.DTO.Event;
@@ -26,6 +26,7 @@ public class MappingProfile : Profile
 
         //Event Mappers
         CreateMap<Event, EventViewDTO>()
+            .ForMember(act => act.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(act => act.Location, opt => opt
                 .MapFrom(src => src.Location.Name))
             .ForMember(act => act.EventName, opt => opt
@@ -56,7 +57,9 @@ public class MappingProfile : Profile
         //Comments Mappers
         CreateMap<Comment, CommentDTO>()
             .ForMember(act => act.UserName, opt => opt
-                .MapFrom(src => src.User.FullName));
+                .MapFrom(src => src.User.FullName))
+            .ForMember(act => act.Photo, opt => opt
+                .MapFrom(act => act.User.Photo));
         CreateMap<CreateCommentDTO, Comment>()
             .ForMember(src => src.DateTime, opt => opt
                 .MapFrom(src => DateTime.Now));

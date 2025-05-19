@@ -37,6 +37,8 @@ public class UserController:ControllerBase
     [Authorize(Policy = "Администратор")]
     public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
     {
+        if(!ModelState.IsValid)
+            return BadRequest(new {message = "Вы неправильно заполнили поля, обратите внимание на поля телефона и почты"});
         var createdUser = await _userService.CreateUserAsync(user);
         if(createdUser == null) return BadRequest(new { message = "Этот логин уже занят" });
         return Ok(new {message =  $"Пользователь с id = {createdUser.Id} успешно создан"});

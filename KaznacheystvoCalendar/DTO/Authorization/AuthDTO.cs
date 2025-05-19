@@ -1,4 +1,4 @@
-﻿namespace CoolFormApi.DTO.Auth;
+﻿namespace KaznacheystvoCalendar.DTO.Authorization;
 
 public class AuthDTO
 {

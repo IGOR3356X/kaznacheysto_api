@@ -1,4 +1,4 @@
-﻿using CoolFormApi.DTO.Auth;
+﻿using KaznacheystvoCalendar.DTO.Authorization;
 using KaznacheystvoCalendar.DTO;
 using KaznacheystvoCalendar.DTO.User;
 using KaznacheystvoCalendar.Models;

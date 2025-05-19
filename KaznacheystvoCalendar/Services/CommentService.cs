@@ -21,7 +21,9 @@ public class CommentService:ICommentService
     public async Task<List<CommentDTO>> GetCommentsForEventAsync(int eventId)
     {
         var comments = await _commentRepository.GetQueryable()
-            .Include(x => x.User).ToListAsync();
+            .Include(x => x.User)
+            .Where(x => x.EventId == eventId)
+            .ToListAsync();
         return _mapper.Map<List<CommentDTO>>(comments);
     }
 
