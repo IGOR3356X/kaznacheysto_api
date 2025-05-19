@@ -19,6 +19,8 @@ public class AuthorizationController : Controller
     [HttpPost("api/login")]
     public async Task<IActionResult> Login([FromBody]AuthDTO auth)
     {
+        if (!ModelState.IsValid)
+            return BadRequest();
         var user = await _userService.LoginUserAsync(auth);
 
         if (user == null)

@@ -11,8 +11,6 @@ public class CreateUserDTO
     public string FullName { get; set; }
     [Phone]
     public string Telephone { get; set; }
-    
-    public string? Photo { get; set; }
     [EmailAddress]
     public string Email { get; set; }
 

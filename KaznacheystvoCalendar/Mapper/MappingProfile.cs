@@ -43,6 +43,8 @@ public class MappingProfile : Profile
 
         //EventVisibility Mappers
         CreateMap<EventVisible, EventViewDTO>()
+            .ForMember(act => act.Id, opt => opt
+                .MapFrom(src => src.Event.Id))
             .ForMember(act => act.Description, opt => opt
                 .MapFrom(scr => scr.Event.Description))
             .ForMember(scr => scr.Location, opt => opt

@@ -119,6 +119,7 @@ public class UserService : IUserService
 
     public async Task<User> LoginUserAsync(AuthDTO authDTO)
     {
+        var a = 5;
         return await _repository.GetQueryable()
             .Include(x=> x.Department)
             .Include(x => x.Role)

@@ -67,9 +67,9 @@ public class EventMemberService:IEventMemberService
         return _mapper.Map<CreatedEventMemberDTO>(await _evntMemberRepo.CreateAsync(_mapper.Map<EventMember>(dto)));
     }
 
-    public async Task<bool> DeleteEventMember(int id)
+    public async Task<bool> DeleteEventMember(int id,int userId)
     {
-        var isExist = await _evntMemberRepo.GetQueryable().Where(x => x.Id == id).FirstOrDefaultAsync();
+        var isExist = await _evntMemberRepo.GetQueryable().Where(x => x.EventId == id && x.UserId == userId).FirstOrDefaultAsync();
         if(isExist == null)
             return false;
         await _evntMemberRepo.DeleteAsync(isExist);

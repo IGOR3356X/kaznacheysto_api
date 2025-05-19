@@ -9,5 +9,5 @@ public interface IEventMemberService
 {
     public Task<PaginatedResponse<GetAllEventMemberDTO>> GetEventMembers(QueryObject queryObject, int id);
     public Task<CreatedEventMemberDTO> CreateEventMember(CreateEventMemberDTO dto);
-    public Task<bool> DeleteEventMember(int id);
+    public Task<bool> DeleteEventMember(int id,int userId);
 }

@@ -35,10 +35,11 @@ public class EventMemberController:ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> DeleteEventMembers([FromRoute] int id)
     {
-        var isExist = await _eventMemberService.DeleteEventMember(id);
+        var userId =int.Parse(User.Claims.First(claim => claim.Type == "Id").Value);
+        var isExist = await _eventMemberService.DeleteEventMember(id,userId);
         if(isExist == false)
             return NotFound();
         return NoContent();
