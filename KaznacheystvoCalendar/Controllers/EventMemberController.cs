@@ -25,7 +25,7 @@ public class EventMemberController:ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Администратор,Менеджер мероприятий")]
+    [Authorize(Roles = "Сотрудник,Администратор,Менеджер мероприятий")]
     public async Task<IActionResult> CreateEventMembers(CreateEventMemberDTO dto)
     {
         var createdMember = await _eventMemberService.CreateEventMember(dto);

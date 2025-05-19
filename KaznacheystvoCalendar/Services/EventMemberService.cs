@@ -61,8 +61,8 @@ public class EventMemberService:IEventMemberService
 
     public async Task<CreatedEventMemberDTO> CreateEventMember(CreateEventMemberDTO dto)
     {
-        var isRegistered = await _evntMemberRepo.GetQueryable().AnyAsync(x => x.UserId == dto.userId);
-        if (isRegistered)
+        var isRegistered = await _evntMemberRepo.GetQueryable().FirstOrDefaultAsync(x => x.UserId == dto.userId && x.EventId == dto.eventId);
+        if (isRegistered != null)
             return null;
         return _mapper.Map<CreatedEventMemberDTO>(await _evntMemberRepo.CreateAsync(_mapper.Map<EventMember>(dto)));
     }
