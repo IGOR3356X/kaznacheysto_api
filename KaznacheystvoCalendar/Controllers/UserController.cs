@@ -35,7 +35,7 @@ public class UserController:ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "Администратор")]
-    public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
+    public async Task<IActionResult> AddUser([FromForm] CreateUserDTO user)
     {
         if(!ModelState.IsValid)
             return BadRequest(new {message = "Вы неправильно заполнили поля, обратите внимание на поля телефона и почты"});

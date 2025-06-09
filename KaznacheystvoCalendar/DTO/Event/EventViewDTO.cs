@@ -8,4 +8,5 @@ public class EventViewDTO
     public string Location { get; set; }
     public DateTime StartDateTime { get; set; }
     public DateTime EndDateTime { get; set; }
+    public int[] DepartmentsId {get; set;}
 }

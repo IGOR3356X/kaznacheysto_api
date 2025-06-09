@@ -119,10 +119,9 @@ public class UserService : IUserService
 
     public async Task<User> LoginUserAsync(AuthDTO authDTO)
     {
-        var a = 5;
         return await _repository.GetQueryable()
             .Include(x=> x.Department)
             .Include(x => x.Role)
-            .FirstOrDefaultAsync(x => x.Login.Contains(authDTO.Login) && x.Password.Contains(authDTO.Password));
+            .FirstOrDefaultAsync(x => x.Login == authDTO.Login && x.Password == authDTO.Password);
     }
 }

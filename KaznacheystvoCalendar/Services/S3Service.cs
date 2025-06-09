@@ -39,16 +39,16 @@ public class S3Service: IS3Service
             var request = new PutObjectRequest
             {
                 BucketName = _bucketName,
-                Key = $"UserPhotos/{id}/{file.FileName}",
+                Key = $"KaznaCalendar/UserPhotos/{id}/{file.FileName}",
                 InputStream = memoryStream,
                 ContentType = file.ContentType,
-                AutoCloseStream = false,
+                AutoCloseStream = false,    
                 UseChunkEncoding = false
             };
 
             var response = await _s3Client.PutObjectAsync(request);
             
-            return $"https://{_bucketName}.storage.yandexcloud.net/UserPhotos/{id}/{file.FileName}";
+            return $"https://{_bucketName}.storage.yandexcloud.net/KaznaCalendar/UserPhotos/{id}/{file.FileName}";
         }
         catch (Exception ex)
         {

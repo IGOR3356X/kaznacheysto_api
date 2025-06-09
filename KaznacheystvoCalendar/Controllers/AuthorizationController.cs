@@ -20,12 +20,12 @@ public class AuthorizationController : Controller
     public async Task<IActionResult> Login([FromBody]AuthDTO auth)
     {
         if (!ModelState.IsValid)
-            return BadRequest();
+            return BadRequest(new { message = "Минимаьная длинна логина/паролья 1 символ" });
         var user = await _userService.LoginUserAsync(auth);
 
         if (user == null)
         {
-            return Unauthorized(new {message = "Username not found and/or password"});
+            return Unauthorized(new {message = "Пользователь не найден или введён неправильный пароль"});
         }
 
         return Ok(

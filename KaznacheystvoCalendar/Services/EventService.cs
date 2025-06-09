@@ -39,6 +39,8 @@ public class EventService : IEventService
         {
             var events = await _eventRepository.GetQueryable()
                 .Include(x => x.Location)
+                .Include(x=> x.EventVisibles)
+                .ThenInclude(x=> x.Department)
                 .Where(x => x.StartDateTime.Month == month && x.StartDateTime.Year == year)
                 .ToListAsync();
             return _mapper.Map<List<EventViewDTO>>(events);
@@ -47,6 +49,7 @@ public class EventService : IEventService
         var userEvents = await _visibleRepository.GetQueryable()
             .Include(x => x.Event)
             .Include(x => x.Event.Location)
+            .Include(x=> x.Department)
             .Where(x => x.Event.StartDateTime.Month == month
                         && x.Event.StartDateTime.Year == year
                         && x.Department.Name == userDepartament).ToListAsync();
@@ -59,12 +62,14 @@ public class EventService : IEventService
         if (userRole == "Администратор" || userRole == "Менеджер мероприятий")
         {
             var events = _eventRepository.GetQueryable()
-                .Include(x => x.Location);
+                .Include(x => x.Location)
+                .Include(x=> x.EventVisibles)
+                .ThenInclude(x=> x.Department);
 
             if (!string.IsNullOrEmpty(query.Search))
             {
                 var searchLower = query.Search.ToLower();
-                events = (IIncludableQueryable<Event, Location>)events.Where(r =>
+                events = (IIncludableQueryable<Event, Department>)events.Where(r =>
                     r.Id.ToString().ToLower().Contains(searchLower) ||
                     r.Name.ToLower().Contains(searchLower) ||
                     r.Location.Name.ToLower().Contains(searchLower) ||
@@ -80,7 +85,7 @@ public class EventService : IEventService
             var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
             var items = await events
-                .OrderByDescending(x => x.StartDateTime)
+                .OrderByDescending(x => x.Id)
                 .Skip(skipNumber)
                 .Take(query.PageSize).ToListAsync();
 
@@ -204,7 +209,7 @@ public class EventService : IEventService
 
         await _visibleRepository.DeleteRangeAsync(selectedGG);
 
-        var departments = eventDto.departmentIds.Select(
+        var departments = eventDto.DepartmentsId.Select(
             t => new EventVisible() { EventId = updatedEntity.Id, DepartmentId = t, }).ToList();
 
         await _visibleRepository.AddRangeAsync(departments);
@@ -218,6 +223,9 @@ public class EventService : IEventService
             .Include(x=>x.User)
             .Include(x=>x.Event)
             .ThenInclude(x=> x.Location)
+            .Include(x => x.Event)
+            .ThenInclude(e => e.EventVisibles)
+            .ThenInclude(ev => ev.Department)
             .Where(x => x.UserId == userId);
         
         var skipNumber = (query.PageNumber - 1) * query.PageSize;
@@ -226,10 +234,12 @@ public class EventService : IEventService
         var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
         var items = await events
-            .OrderByDescending(x => x.Event.StartDateTime)
+            .OrderBy(x => x.Event.Id)
             .Skip(skipNumber)
-            .Take(query.PageSize).ToListAsync();
-
+            .Take(query.PageSize)
+            .Select(x => x.Event)
+            .ToListAsync();
+        
         var result = new PaginatedResponse<EventViewDTO>
         {
             TotalCount = totalCount,

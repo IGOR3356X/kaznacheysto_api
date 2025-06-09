@@ -4,8 +4,9 @@ namespace KaznacheystvoCalendar.DTO.User;
 
 public class CreateUserDTO
 {
+    [MinLength(1)]
     public string Login { get; set; }
-
+    [MinLength(1)]
     public string Password { get; set; } 
     
     public string FullName { get; set; }

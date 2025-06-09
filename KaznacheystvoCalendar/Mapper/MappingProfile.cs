@@ -30,7 +30,9 @@ public class MappingProfile : Profile
             .ForMember(act => act.Location, opt => opt
                 .MapFrom(src => src.Location.Name))
             .ForMember(act => act.EventName, opt => opt
-                .MapFrom(src => src.Name));
+                .MapFrom(src => src.Name))
+            .ForMember(src => src.DepartmentsId, opt => opt
+                .MapFrom(x=> x.EventVisibles.Select(x=> x.Department.Id).ToArray()));
         CreateMap<CreateEventDTO, Event>();
         CreateMap<Event, CreatedEventDTO>().ForMember(src => src.Manager, opt => opt
                 .MapFrom(src => src.Manager.FullName))
@@ -54,7 +56,9 @@ public class MappingProfile : Profile
             .ForMember(scr => scr.EndDateTime, opt => opt
                 .MapFrom(src => src.Event.EndDateTime));
         CreateMap<EventVisible, GetDeparamentsDTO>().ForMember(src => src.Name, opt => opt
-            .MapFrom(src => src.Department.Name));
+            .MapFrom(src => src.Department.Name))
+            .ForMember(act => act.Id, opt => opt
+                .MapFrom(src => src.DepartmentId));
 
         //Comments Mappers
         CreateMap<Comment, CommentDTO>()
